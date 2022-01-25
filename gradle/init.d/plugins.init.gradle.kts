@@ -14,6 +14,14 @@ val GROUP_NAME = "init.gradle"
 val TASK_NAME = "showPlugins"
 val TASK_DESC = "Displays the plugins of project"
 
+fun fixBuildSrcTask(name: String) {
+    val key = "init.gradle.buildSrc.tasks"
+    val tasks = System.getProperty(key).orEmpty().split(",")
+        .filter { it.isNotBlank() }.toMutableList().apply { add(name) }
+    System.setProperty(key, tasks.joinToString())
+}
+fixBuildSrcTask(TASK_NAME)
+
 // simple implementation of ansi, ref: https://github.com/chalk/chalk/blob/main/source/vendor/ansi-styles/index.js
 val FLAG = "\u001B["
 val FLAG_RESET = "${FLAG}0m"

@@ -56,6 +56,14 @@ val TASK_NAME_TOGGLE_DELETE_RAW_REPOS = "toggleDeleteRawRepos"
 val TASK_DESC_TOGGLE_DELETE_RAW_REPOS =
     "Enable/Disable - Whether to delete the source repositories configured in the project"
 
+fun fixBuildSrcTask(name: String) {
+    val key = "init.gradle.buildSrc.tasks"
+    val tasks = System.getProperty(key).orEmpty().split(",")
+        .filter { it.isNotBlank() }.toMutableList().apply { add(name) }
+    System.setProperty(key, tasks.joinToString())
+}
+fixBuildSrcTask(TASK_NAME_SHOW_REPOS)
+
 // collection of all repositories
 val collection = LinkedHashMap<String, ArrayList<MavenArtifactRepository>>()
 

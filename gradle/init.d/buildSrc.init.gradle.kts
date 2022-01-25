@@ -1,7 +1,7 @@
 /*
  * Provides a listener so that `buildSrc` could run same task from rootProject.
  *
- * set property before apply this script: System.setProperty("init.gradle.buildSrc.tasks", "showRepos,showPlugins")
+ * set property before `projectsLoaded`: System.setProperty("init.gradle.buildSrc.tasks", "showRepos,showPlugins")
  *
  * @author anyesu <https://github.com/anyesu>
  */
@@ -44,10 +44,14 @@ val projectConfigs by lazy {
 
 val Project.isBuildSrc get() = name == "buildSrc"
 
-class BuildSrcFixer(private val taskNames: Iterable<String>) : BuildAdapter() {
+class BuildSrcFixer : BuildAdapter() {
+    private val taskNames by lazy {
+        System.getProperty("init.gradle.buildSrc.tasks").orEmpty().split(",").map { it.trim() }.toSet()
+    }
+
     override fun projectsLoaded(gradle: Gradle) {
         // Indicates that whether the task is running
-        startParameter.taskNames.intersect(taskNames.toSet()).forEach { isTaskRunning(it, true) }
+        startParameter.taskNames.intersect(taskNames).forEach { isTaskRunning(it, true) }
 
         rootProject {
             if (!isBuildSrc) return@rootProject
@@ -75,5 +79,4 @@ fun isTaskRunning(name: String, running: Boolean) {
     projectConfigs[name] = running
 }
 
-val tasks = System.getProperty("init.gradle.buildSrc.tasks").orEmpty().split(",")
-addListener(BuildSrcFixer(tasks))
+addListener(BuildSrcFixer())
