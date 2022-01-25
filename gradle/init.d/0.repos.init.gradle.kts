@@ -147,7 +147,6 @@ fun RepositoryHandler.configureRepos(group: String = "") {
     maven(Repos.MAVEN_HUAWEI)
     google { url = uri(Repos.GOOGLE_ALIYUN) }
     maven(Repos.MAVEN_JITPACK)
-    @Suppress("DEPRECATION") jcenter { url = uri(Repos.MAVEN_ALIYUN) }
     mavenCentral()
     google()
     // JCenter shutdown, ref: https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter
