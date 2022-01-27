@@ -1,0 +1,54 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+max_line_length = 120
+tab_width = 4
+trim_trailing_whitespace = true
+
+[.editorconfig]
+ij_editorconfig_align_group_field_declarations = false
+ij_editorconfig_space_after_colon = false
+ij_editorconfig_space_after_comma = false
+ij_editorconfig_space_before_colon = false
+ij_editorconfig_space_before_comma = false
+ij_editorconfig_spaces_around_assignment_operators = true
+
+# https://github.com/pinterest/ktlint
+[*.{kt,kts}]
+max_line_length = 160
+ij_continuation_indent_size = 4
+ij_kotlin_align_multiline_parameters = false
+ij_kotlin_code_style_defaults = KOTLIN_OFFICIAL
+ij_kotlin_imports_layout = *,java.**,javax.**,kotlin.**,^
+ij_kotlin_keep_blank_lines_before_right_brace = 0
+ij_kotlin_keep_blank_lines_in_code = 1
+ij_kotlin_keep_blank_lines_in_declarations = 1
+ij_kotlin_line_comment_add_space = true
+ij_kotlin_line_comment_at_first_column = false
+ij_kotlin_name_count_to_use_star_import = 2147483647
+ij_kotlin_name_count_to_use_star_import_for_members = 2147483647
+ij_kotlin_packages_to_use_import_on_demand = kotlinx.android.synthetic.**,io.ktor.**
+
+[*.gradle.kts]
+max_line_length = 200
+
+[*.xml]
+ij_xml_align_attributes = false
+ij_xml_block_comment_at_first_column = false
+ij_xml_keep_blank_lines = 1
+ij_xml_keep_line_breaks = false
+ij_xml_line_comment_at_first_column = false
+ij_xml_space_inside_empty_tag = true
+ij_xml_use_custom_settings = true
+
+[*.properties]
+ij_properties_keep_blank_lines = true
+
+# Batch Files
+[*.{cmd,bat}]
+end_of_line = crlf
