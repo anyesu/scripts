@@ -158,14 +158,11 @@ fun RepositoryHandler.collectRepositories(group: String = "") = all {
 
     val path = url.toString().run { if (endsWith("/")) this else "$this/" }
     if (deleteRawRepos && rawRepos.contains(path)) {
-        logger.info("removed from `${group}`: ${display()}")
+        println("removed from `${group}`: ${display()}")
         remove(this)
     } else {
         val repositories = collection.getOrPut(group) { ArrayList() }
-        if (repositories.map { it.url }.contains(url)) {
-            logger.info("removed from `${group}`: ${display()}")
-            remove(this)
-        } else {
+        if (!repositories.map { it.url }.contains(url)) {
             repositories.add(this)
         }
     }
