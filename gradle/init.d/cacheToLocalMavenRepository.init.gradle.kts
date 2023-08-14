@@ -18,6 +18,9 @@ val TASK_DESC = "Move local Gradle caches to local Maven caches"
 
 projectsLoaded {
     rootProject {
+        val groupIdExcludes = setOf("gradle", "org.codehaus.groovy", "com.squareup.okio")
+        val artifactIdExcludes = setOf("kotlin-stdlib", "unzipped.com.jetbrains.plugins")
+
         tasks.register<Copy>(TASK_NAME) {
             group = GROUP_NAME
             description = TASK_DESC
@@ -27,6 +30,11 @@ projectsLoaded {
             into(repositories.mavenLocal().url)
             eachFile {
                 val parts = ArrayList(path.split("/"))
+                if (parts.size < 2 || groupIdExcludes.contains(parts[0]) || artifactIdExcludes.contains(parts[1])) {
+                    exclude()
+                    return@eachFile
+                }
+
                 parts[0] = parts[0].replace('.', '/') // split path
                 if (parts.size > 3) parts.removeAt(3) // remove random values
                 path = parts.joinToString("/")
@@ -35,8 +43,23 @@ projectsLoaded {
             includeEmptyDirs = false
 
             doLast {
-                gradleCache.deleteRecursively()
+                gradleCache.listFiles()?.flatMap {
+                    if (groupIdExcludes.contains(it.name) || !it.isDirectory) {
+                        return@flatMap emptyList<File>()
+                    }
+                    it.listFiles { f ->
+                        !artifactIdExcludes.contains(f.name)
+                    }?.toList() ?: emptyList()
+                }?.forEach { it.deleteRecursively() }
+
+                // delete empty dirs
+                gradleCache.listFiles { f ->
+                    f.isDirectory && f.list()?.isEmpty() ?: false
+                }?.forEach { it.delete() }
             }
+
+            // always run task (no cache), ref: https://github.com/gradle/gradle/issues/9095
+            outputs.upToDateWhen { false }
         }
         // auto execute when run `gradlew`
         // defaultTasks(TASK_NAME)
