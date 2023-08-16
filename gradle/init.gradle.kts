@@ -6,16 +6,12 @@
  * @author anyesu <https://github.com/anyesu>
  */
 
-import com.vdurmont.semver4j.Semver
+import org.gradle.util.GradleVersion
 
 initscript {
     repositories {
         mavenLocal()
         gradlePluginPortal()
-    }
-
-    dependencies {
-        classpath("com.vdurmont:semver4j:3.1.0")
     }
 }
 
@@ -124,13 +120,13 @@ val scripts = linkedMapOf<String, Script>().apply {
 }
 
 fun check(version: String) = try {
-    Semver(gradleVersion).isGreaterThanOrEqualTo(version)
+    GradleVersion.current() >= GradleVersion.version(version)
 } catch (e: Throwable) {
     false
 }
 
-(fun() {
-    "7.0.0".also {
+fun main() {
+    "7.0".also {
         if (!check(it)) {
             println(gradle.startParameter.allInitScripts)
             println("Skip Initialization Script: requires Gradle \"$it\" or newer, current is \"$gradleVersion\" .")
@@ -150,4 +146,6 @@ fun check(version: String) = try {
             }
         }
     }
-})()
+}
+
+main()
