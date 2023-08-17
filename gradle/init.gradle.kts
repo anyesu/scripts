@@ -58,7 +58,13 @@ var BASE_PATH = "E:\\github\\anyesu\\scripts\\gradle\\init.d\\"
 // BASE_PATH = "https://raw.fastgit.org/anyesu/scripts/main/gradle/init.d/"
 // BASE_PATH = "https://cdn.staticaly.com/gh/anyesu/scripts@main/gradle/init.d/"
 
-val scriptPaths = listOf<String>(
+fun List<String>.resolveScriptPath() = mapTo(ArrayList()) { "$BASE_PATH$it" }
+
+val staticScriptPaths = listOf(
+    "mavenLocal.init.gradle.kts"
+).resolveScriptPath()
+
+val scriptPaths = listOf(
     "0.repos.init.gradle.kts",
     "buildSrc.init.gradle.kts",
     "cacheToLocalMavenRepository.init.gradle.kts",
@@ -66,7 +72,7 @@ val scriptPaths = listOf<String>(
     "dependencyUpdates.init.gradle.kts",
     "plugins.init.gradle.kts",
     "proxy.init.gradle.kts"
-).mapTo(ArrayList()) { "$BASE_PATH$it" }
+).resolveScriptPath()
 
 class Script(val key: String, val path: String) {
     var disabled by configs.bind(key)
@@ -107,8 +113,8 @@ class Script(val key: String, val path: String) {
     }
 }
 
-val scripts = linkedMapOf<String, Script>().apply {
-    scriptPaths.map {
+fun getScripts(paths: Collection<String>): LinkedHashMap<String, Script> = linkedMapOf<String, Script>().apply {
+    paths.map {
         val name = File(it).name
         var key = name
         var index = 1
@@ -119,6 +125,8 @@ val scripts = linkedMapOf<String, Script>().apply {
     }
 }
 
+fun LinkedHashMap<String, Script>.apply() = values.forEach { it.apply() }
+
 fun check(version: String) = try {
     GradleVersion.current() >= GradleVersion.version(version)
 } catch (e: Throwable) {
@@ -126,6 +134,20 @@ fun check(version: String) = try {
 }
 
 fun main() {
+    getScripts(staticScriptPaths).apply()
+    projectsLoaded {
+        rootProject {
+            tasks.register("baseShowRepos") {
+                group = GROUP_NAME
+                val repositoryNames = repositories.map { it.name }
+                doLast {
+                    println("All repos:")
+                    println(repositoryNames)
+                }
+            }
+        }
+    }
+
     "7.0".also {
         if (!check(it)) {
             println(gradle.startParameter.allInitScripts)
@@ -136,7 +158,7 @@ fun main() {
 
     val rootScript = "init.gradle.kts"
     var disabled by configs.bind(rootScript)
-    if (!disabled) scripts.values.forEach { it.apply() }
+    if (!disabled) getScripts(scriptPaths).apply()
     projectsLoaded {
         rootProject.tasks.register(rootScript) {
             group = GROUP_NAME
