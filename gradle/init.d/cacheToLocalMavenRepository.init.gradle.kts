@@ -19,7 +19,7 @@ val TASK_DESC = "Move local Gradle caches to local Maven caches"
 projectsLoaded {
     rootProject {
         val groupIdExcludes = setOf("gradle", "org.codehaus.groovy", "com.squareup.okio")
-        val artifactIdExcludes = setOf("kotlin-stdlib", "unzipped.com.jetbrains.plugins")
+        val artifactIdExcludes = setOf("kotlin-stdlib", "unzipped.com.jetbrains.plugins", "jbre")
 
         tasks.register<Copy>(TASK_NAME) {
             group = GROUP_NAME
